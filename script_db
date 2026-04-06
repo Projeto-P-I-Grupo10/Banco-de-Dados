@@ -1,0 +1,110 @@
+CREATE SCHEMA IF NOT EXISTS conectaestatica;
+USE conectaestatica;
+
+CREATE TABLE usuario (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(45) NOT NULL,
+  email VARCHAR(45) NOT NULL UNIQUE,
+  senha VARCHAR(45) NOT NULL,
+  telefone VARCHAR(45),
+  foto VARCHAR(45),
+  tipo_usuario ENUM('usuario','adm','funcionario') NOT NULL
+);
+
+CREATE TABLE endereco_usuario (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cep VARCHAR(45),
+  numero VARCHAR(45),
+  uf VARCHAR(45),
+  rua VARCHAR(45),
+  cidade VARCHAR(45),
+  complemento VARCHAR(45),
+  usuario_id INT,
+  FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+);
+
+CREATE TABLE area_curso (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(45) NOT NULL,
+  descricao VARCHAR(255)
+);
+
+CREATE TABLE professor (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(45) NOT NULL,
+  descricao VARCHAR(255),
+  email VARCHAR(45),
+  redesocial VARCHAR(255),
+  foto VARCHAR(255)
+);
+
+CREATE TABLE curso (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(45) NOT NULL,
+  descricao LONGTEXT,
+  foto VARCHAR(45),
+  area_curso_id INT,
+  professor_id INT,
+  FOREIGN KEY (area_curso_id) REFERENCES area_curso(id),
+  FOREIGN KEY (professor_id) REFERENCES professor(id)
+);
+
+CREATE TABLE endereco_curso (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cep VARCHAR(45),
+  numero VARCHAR(45),
+  uf VARCHAR(45),
+  rua VARCHAR(45),
+  cidade VARCHAR(45),
+  complemento VARCHAR(45)
+);
+
+CREATE TABLE turma (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  dataInicio DATETIME,
+  dataFim DATETIME,
+  preco DECIMAL(10,2),
+  qtd_vagas INT,
+  curso_id INT,
+  endereco_curso_id INT,
+  FOREIGN KEY (curso_id) REFERENCES curso(id),
+  FOREIGN KEY (endereco_curso_id) REFERENCES endereco_curso(id)
+);
+
+CREATE TABLE avaliacao_curso (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  id_curso INT,
+  id_usuario INT,
+  data_avaliacao DATETIME,
+  data_atualizacao DATETIME,
+  valor INT,
+  descricao VARCHAR(255),
+  FOREIGN KEY (id_curso) REFERENCES curso(id),
+  FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+);
+
+CREATE TABLE carrinho (
+  usuario_id INT,
+  curso_id INT,
+  PRIMARY KEY (usuario_id, curso_id),
+  FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+  FOREIGN KEY (curso_id) REFERENCES curso(id)
+);
+
+CREATE TABLE tipo_pagamento (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tipo VARCHAR(45) NOT NULL
+);
+
+CREATE TABLE compra (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  data_compra DATETIME,
+  valor_pago DECIMAL(10,2),
+  usuario_id INT,
+  curso_id INT,
+  id_tipo_pagamento INT,
+  FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+  FOREIGN KEY (curso_id) REFERENCES curso(id),
+  FOREIGN KEY (id_tipo_pagamento) REFERENCES tipo_pagamento(id)
+);
+
